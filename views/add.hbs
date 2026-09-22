@@ -21,36 +21,79 @@
         </div>
         <div class="form-group">
           <label>Название этапа</label>
-          <input type="text" placeholder="Введите название этапа" />
+          <input type="text" value="{{stage.stageName}}" />
         </div>
         <div class="form-group">
           <label>Описание</label>
-          <textarea placeholder="Введите описание этапа"></textarea>
+          <textarea>{{stage.stageDescription}}</textarea>
         </div>
         <div class="form-group">
           <label>Трудоёмкость (часы)</label>
-          <input type="number" placeholder="Например, 40" />
+          <input type="number" value="{{stage.laborIntensity}}" />
         </div>
         <div class="form-group">
           <label>Ставка (₽/час)</label>
-          <input type="number" placeholder="Например, 1500" />
+          <input type="number" value="{{stage.hourlyRate}}" />
         </div>
         <div class="form-group">
           <label>Стоимость этапа (₽)</label>
-          <input type="number" placeholder="Например, 60000" />
+          <input type="number" value="{{stage.stageCost}}" />
         </div>
         <div class="form-group">
           <label>Размер команды (чел)</label>
-          <input type="number" placeholder="Например, 2" />
+          <input type="number" value="{{stage.teamSize}}" />
         </div>
         <div class="form-group">
           <label>Длительность (дни)</label>
-          <input type="number" placeholder="Например, 10" />
+          <input type="number" value="{{stage.durationDays}}" />
         </div>
-        <button type="button" disabled>Опубликовать</button>
+      </form>
+      <form action="/dev-stages/publish" method="POST">
+        <input type="hidden" name="id" value="{{stage.id}}" />
+        <button type="submit" class="publish-btn">Опубликовать</button>
       </form>
     {{else}}
-      <p>Черновик не найден</p>
+      <h1>Создание черновика</h1>
+      <p>У вас пока нет черновика. Нажмите «Далее», чтобы создать новый этап.</p>
+      <form action="/dev-stages/add" method="POST">
+        <div class="form-group">
+          <label>Изображение</label>
+          <div class="media-preview"><img src="/default/image.jpg" alt="изображение" /></div>
+        </div>
+        <div class="form-group">
+          <label>Видео</label>
+          <div class="media-preview"><video src="/default/video.mp4" controls></video></div>
+        </div>
+        <div class="form-group">
+          <label>Название этапа</label>
+          <input type="text" name="stageName" placeholder="Введите название" />
+        </div>
+        <div class="form-group">
+          <label>Описание</label>
+          <textarea name="stageDescription" placeholder="Введите описание"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Трудоёмкость (часы)</label>
+          <input type="number" name="laborIntensity" placeholder="40" />
+        </div>
+        <div class="form-group">
+          <label>Ставка (₽/час)</label>
+          <input type="number" name="hourlyRate" placeholder="1500" />
+        </div>
+        <div class="form-group">
+          <label>Стоимость этапа (₽)</label>
+          <input type="number" name="stageCost" placeholder="60000" />
+        </div>
+        <div class="form-group">
+          <label>Размер команды (чел)</label>
+          <input type="number" name="teamSize" placeholder="2" />
+        </div>
+        <div class="form-group">
+          <label>Длительность (дни)</label>
+          <input type="number" name="durationDays" placeholder="10" />
+        </div>
+        <button type="submit" class="next-step-btn">Далее</button>
+      </form>
     {{/if}}
   </div>
   {{> navbar active="add"}}

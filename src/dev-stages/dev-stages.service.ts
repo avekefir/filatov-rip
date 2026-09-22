@@ -1,123 +1,117 @@
-import { Injectable } from '@nestjs/common';
-
-export interface DevStage {
-  id: number;
-  stageName: string;          // название этапа
-  stageDescription: string;   // краткое описание
-  laborIntensity: number;     // трудоёмкость (часы)
-  hourlyRate: number;         // ставка разработчика (₽/час)
-  stageCost: number;          // стоимость этапа (₽)
-  teamSize: number;           // размер команды (чел)
-  durationDays: number;       // длительность (дни)
-  status: 'draft' | 'published' | 'deleted';
-  image: string;              // имя файла в MinIO
-  video: string;              // имя файла в MinIO
-  likes: number[];            // массив ID пользователей
-}
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DevStage } from './entities/dev-stage.entity';
+import { StageLike } from './entities/stage-like.entity';
 
 @Injectable()
 export class DevStagesService {
-  private stages: DevStage[] = [
-    {
-      id: 1,
-      stageName: 'Проектирование',
-      stageDescription: 'Разработка архитектуры ПО и технического задания',
-      laborIntensity: 40,
-      hourlyRate: 1500,
-      stageCost: 60000,
-      teamSize: 2,
-      durationDays: 10,
-      status: 'published',
-      image: 'design.jpg',
-      video: 'design.mp4',
-      likes: [101, 102, 103],
-    },
-    {
-      id: 2,
-      stageName: 'Кодирование',
-      stageDescription: 'Написание исходного кода по спринтам',
-      laborIntensity: 120,
-      hourlyRate: 2000,
-      stageCost: 240000,
-      teamSize: 4,
-      durationDays: 30,
-      status: 'published',
-      image: 'coding.jpg',
-      video: 'coding.mp4',
-      likes: [101, 104],
-    },
-    {
-      id: 3,
-      stageName: 'Тестирование',
-      stageDescription: 'Ручное и автоматизированное тестирование модулей',
-      laborIntensity: 60,
-      hourlyRate: 1200,
-      stageCost: 72000,
-      teamSize: 2,
-      durationDays: 15,
-      status: 'published',
-      image: 'testing.jpg',
-      video: 'testing.mp4',
-      likes: [102, 105],
-    },
-    {
-      id: 4,
-      stageName: 'Внедрение',
-      stageDescription: 'Развертывание и сопровождение',
-      laborIntensity: 30,
-      hourlyRate: 1800,
-      stageCost: 54000,
-      teamSize: 1,
-      durationDays: 7,
-      status: 'deleted',        // не отображается
-      image: 'deploy.jpg',
-      video: 'deploy.mp4',
-      likes: [],
-    },
-    {
-      id: 5,
-      stageName: 'Черновик этапа',
-      stageDescription: 'Заполните описание нового этапа',
-      laborIntensity: 0,
-      hourlyRate: 1000,
-      stageCost: 0,
-      teamSize: 1,
-      durationDays: 0,
-      status: 'draft',          // единственный черновик
-      image: 'draft.jpg',
-      video: 'draft.mp4',
-      likes: [],
-    },
-  ];
+  constructor(
+    @InjectRepository(DevStage)
+    private readonly stageRepo: Repository<DevStage>,
+    @InjectRepository(StageLike)
+    private readonly likeRepo: Repository<StageLike>,
+  ) {}
 
-  getPublished(): DevStage[] {
-    return this.stages.filter(s => s.status === 'published');
+  // Список опубликованных (для плитки) с фильтром по стоимости
+  async filterByCostRange(minCost: number, maxCost: number): Promise<DevStage[]> {
+    const qb = this.stageRepo
+      .createQueryBuilder('stage')
+      .leftJoinAndSelect('stage.likes', 'like')
+      .where('stage.status = :status', { status: 'published' });
+
+    if (!isNaN(minCost)) {
+      qb.andWhere('stage.stageCost >= :min', { min: minCost });
+    }
+    if (!isNaN(maxCost)) {
+      qb.andWhere('stage.stageCost <= :max', { max: maxCost });
+    }
+
+    return qb.orderBy('stage.id', 'ASC').getMany();
   }
 
-  getDraft(): DevStage | undefined {
-    return this.stages.find(s => s.status === 'draft');
+  // Через КУРСОР (raw SQL) — как требует методичка
+  async getById(id: number): Promise<DevStage | null> {
+    const rows = await this.stageRepo.query(
+      `SELECT * FROM dev_stages WHERE id = $1 AND status != 'deleted'`,
+      [id],
+    );
+    if (rows.length === 0) return null;
+
+    const likes = await this.likeRepo.find({ where: { stageId: id } });
+    return { ...rows[0], likes };
   }
 
-  getById(id: number): DevStage | undefined {
-    return this.stages.find(s => s.id === id);
+  // Следующий опубликованный (циклически) — БЕЗ загрузки всего списка
+  async getNextAfter(id: number): Promise<DevStage | null> {
+    // Ищем первую запись с id > текущего среди опубликованных
+    const rows = await this.stageRepo.query(
+      `SELECT id FROM dev_stages
+      WHERE status = 'published' AND id > $1
+      ORDER BY id ASC
+      LIMIT 1`,
+      [id],
+    );
+
+    let nextId: number;
+
+    if (rows.length > 0) {
+      nextId = rows[0].id;
+    } else {
+      // Если следующий не найден — берём первый опубликованный (циклический переход)
+      const firstRows = await this.stageRepo.query(
+        `SELECT id FROM dev_stages
+        WHERE status = 'published'
+        ORDER BY id ASC
+        LIMIT 1`,
+      );
+      if (firstRows.length === 0) return null;
+      nextId = firstRows[0].id;
+    }
+
+    return this.getById(nextId);
   }
 
-  getNextAfter(id: number): DevStage | undefined {
-    const published = this.getPublished();
-    if (published.length === 0) return undefined;
-    const index = published.findIndex(s => s.id === id);
-    if (index === -1) return undefined;
-    if (index === published.length - 1) return published[0]; // цикл
-    return published[index + 1];
-  }
-
-  filterByCostRange(minCost: number, maxCost: number): DevStage[] {
-    const published = this.getPublished();
-    if (isNaN(minCost) && isNaN(maxCost)) return published;
-    return published.filter(s => {
-      if (!isNaN(minCost) && s.stageCost < minCost) return false;
-      if (!isNaN(maxCost) && s.stageCost > maxCost) return false;
-      return true;
+  // Черновик текущего пользователя (не более 1)
+  async getDraft(userId: number): Promise<DevStage | null> {
+    return this.stageRepo.findOne({
+      where: { status: 'draft', creatorId: userId },
+      relations: { likes: true },
     });
+  }
+
+  // Создание новой записи через ORM (черновик)
+  async createDraft(dto: Partial<DevStage>, userId: number): Promise<DevStage> {
+    const stage = this.stageRepo.create({
+      ...dto,
+      status: 'draft',
+      creatorId: userId,
+    });
+    return this.stageRepo.save(stage);
+  }
+
+  // Публикация через ORM (смена статуса)
+  async publishStage(id: number): Promise<DevStage> {
+    const stage = await this.stageRepo.findOne({ where: { id } });
+    if (!stage) throw new NotFoundException('Этап не найден');
+    if (stage.status === 'deleted') {
+      throw new NotFoundException('Этап удалён');
+    }
+    stage.status = 'published';
+    stage.publishedAt = new Date();
+    return this.stageRepo.save(stage);
+  }
+
+  // Логическое удаление через SQL UPDATE, БЕЗ ORM
+  async softDelete(id: number): Promise<void> {
+    await this.stageRepo.query(
+      `UPDATE dev_stages SET status = 'deleted' WHERE id = $1`,
+      [id],
+    );
+  }
+
+  // Подсчёт лайков
+  async countLikes(stageId: number): Promise<number> {
+    return this.likeRepo.count({ where: { stageId } });
   }
 }

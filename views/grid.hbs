@@ -34,6 +34,10 @@
               <p class="cost">Стоимость: {{this.stageCost}} ₽</p>
             </div>
           </a>
+          <form action="/dev-stages/delete" method="POST" class="delete-form">
+            <input type="hidden" name="id" value="{{this.id}}" />
+            <button type="submit" class="delete-btn">🗑 Удалить</button>
+          </form>
         </div>
       {{else}}
         <p>Нет опубликованных этапов</p>

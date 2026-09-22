@@ -454,3 +454,56 @@ html, body {
   flex-shrink: 0;                   /* не сжимается */
   /* остальные стили без изменений */
 }
+
+/* Кнопка «Далее» (создание черновика) */
+.next-step-btn {
+  width: 100%;
+  padding: 10px;
+  background: #bb0d0d;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+.next-step-btn:hover {
+  background: #8b0000;
+}
+
+/* Кнопка «Опубликовать» */
+.publish-btn {
+  width: 100%;
+  padding: 10px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+.publish-btn:hover {
+  background: #1e7e34;
+}
+
+/* Кнопка удаления в карточке */
+.delete-form {
+  padding: 0 10px 10px;
+}
+.delete-btn {
+  width: 100%;
+  padding: 6px;
+  background: #CD1D1D;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.delete-btn:hover {
+  background: #8b0000;
+}

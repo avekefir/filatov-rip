@@ -13,5 +13,26 @@ services:
       - minio-data:/data
     command: server /data --console-address ":9001"
 
+  postgres:
+    container_name: postgres_db
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: devstages_user
+      POSTGRES_PASSWORD: devstages_pass
+      POSTGRES_DB: dev_stages_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  adminer:
+    container_name: adminer_ui
+    image: adminer:latest
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+
 volumes:
   minio-data:
+  postgres_data:
