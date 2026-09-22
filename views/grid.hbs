@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Этапы разработки</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="grid-container">
+    <h1>Этапы разработки ПО</h1>
+    <form action="/dev-stages/grid" method="GET" class="filter-form">
+      <div class="range-group">
+        <label>Стоимость от (₽):</label>
+        <input type="range" name="minCost" min="0" max="300000" step="1000" value="{{minCost}}" />
+        <span class="range-value">{{minCost}}</span>
+      </div>
+      <div class="range-group">
+        <label>Стоимость до (₽):</label>
+        <input type="range" name="maxCost" min="0" max="300000" step="1000" value="{{maxCost}}" />
+        <span class="range-value">{{maxCost}}</span>
+      </div>
+      <button type="submit">Применить</button>
+    </form>
+
+    <div class="grid-cards">
+      {{#each stages}}
+        <div class="card">
+          <a href="/dev-stages/feed/{{this.id}}">
+            <img src="{{this.imageUrl}}" alt="{{this.stageName}}" />
+            <div class="card-info">
+              <h3>{{this.stageName}}</h3>
+              <p>❤️ {{this.likesCount}}</p>
+              <p class="cost">Стоимость: {{this.stageCost}} ₽</p>
+            </div>
+          </a>
+        </div>
+      {{else}}
+        <p>Нет опубликованных этапов</p>
+      {{/each}}
+    </div>
+  </div>
+  {{> navbar active="grid"}}
+</body>
+</html>

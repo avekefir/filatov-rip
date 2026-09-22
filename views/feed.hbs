@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Лента этапов разработки</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="feed-container">
+    {{#if stage}}
+      <div class="video-wrapper">
+        <video src="{{videoUrl}}" autoplay muted loop playsinline></video>
+        <div class="overlay">
+          <div class="info">
+            <h2>{{stage.stageName}}</h2>
+            <p class="description">{{stage.stageDescription}}</p>
+
+            <!-- Скрытый чекбокс-переключатель -->
+            <input type="checkbox" id="toggle-fields" class="toggle-checkbox" />
+
+            <!-- Скрытые поля -->
+            <div class="fields">
+              <span>Трудоёмкость: {{stage.laborIntensity}} ч</span>
+              <span>Ставка: {{stage.hourlyRate}} ₽/ч</span>
+              <span>Стоимость этапа: {{stage.stageCost}} ₽</span>
+              <span>Команда: {{stage.teamSize}} чел</span>
+              <span>Длительность: {{stage.durationDays}} дн</span>
+            </div>
+
+            <!-- Кнопка-переключатель -->
+            <label for="toggle-fields" class="toggle-btn">
+              <span class="show-more">Больше ►</span>
+              <span class="show-less">Меньше ◄</span>
+            </label>
+          </div>
+          <div class="actions">
+            <div class="likes-circle">
+              <span class="heart">❤️</span>
+              <span class="likes-count">{{likesCount}}</span>
+            </div>
+            <a href="/dev-stages/feed/{{stage.id}}?next=true" class="next-btn">Следующий ➜</a>
+          </div>
+        </div>
+      </div>
+    {{else}}
+      <p>Этап не найден или удалён</p>
+    {{/if}}
+  </div>
+  {{> navbar active="feed"}}
+</body>
+</html>

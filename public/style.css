@@ -1,0 +1,456 @@
+/* ---------- Глобальные настройки ---------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* отключаем прокрутку */
+  background: #1d1d1d;
+  font-family: Roboto, Arial, sans-serif;
+  color: #fff;
+}
+
+/* ---------- Контейнеры страниц ---------- */
+.feed-container,
+.add-container,
+.grid-container {
+  height: calc(100vh - 60px); /* минус высота навбара */
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* ---------- Лента (feed) ---------- */
+.video-wrapper {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 20px 15px;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  box-sizing: border-box;
+  min-height: 55%;
+}
+
+.info {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.info h2 {
+  font-size: 20px;
+  margin: 0 0 6px 0;
+}
+
+.info .description {
+  font-size: 14px;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+/* ---------- Скрытый чекбокс (переключатель) ---------- */
+.toggle-checkbox {
+  display: none;
+}
+
+/* ---------- Поля по теме (по умолчанию скрыты) ---------- */
+.info .fields {
+  display: none;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.info .fields span {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+/* Когда чекбокс отмечен — показываем поля */
+.toggle-checkbox:checked ~ .fields {
+  display: flex;
+}
+
+/* ---------- Кнопка «Больше/Меньше» ---------- */
+.toggle-btn {
+  display: inline-block;
+  margin-top: 8px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  user-select: none;
+}
+
+.toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* По умолчанию показываем «Больше», скрываем «Меньше» */
+.toggle-btn .show-less {
+  display: none;
+}
+
+/* Когда чекбокс отмечен — наоборот */
+.toggle-checkbox:checked ~ .toggle-btn .show-more {
+  display: none;
+}
+.toggle-checkbox:checked ~ .toggle-btn .show-less {
+  display: inline;
+}
+
+/* ---------- Правый блок: лайки и кнопка ---------- */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+.likes-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.2;
+  margin-bottom: 12px;      /* отступ только снизу, чтобы лайк был над кнопкой */
+}
+
+.likes-circle .heart {
+  font-size: 20px;
+}
+
+.likes-circle .likes-count {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.next-btn {
+  display: inline-block;
+  background: #CD1D1D;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.next-btn:hover {
+  background: #bb0d0d;
+}
+/* ---------- Добавление ---------- */
+.add-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 20px 80px;       /* снизу отступ 80px — чтобы последнее поле не залезало под навбар */
+  height: calc(100vh - 60px);    /* высота экрана минус навбар */
+  overflow-y: auto;              /* ← включает прокрутку только внутри контейнера */
+  box-sizing: border-box;
+}
+
+.add-container h1 {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 20px;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #CD1D1D;         /* подсветка при фокусе — в вашем красном */
+  background: #fff;
+}
+
+.form-group textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+.media-preview {
+  margin-bottom: 6px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.media-preview img,
+.media-preview video {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.add-container button {
+  width: 100%;
+  padding: 10px;
+  background: #bb0d0d;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: not-allowed;
+  opacity: 0.6;
+  margin-top: 10px;
+}
+
+/* Красивая полоса прокрутки (опционально) */
+.add-container::-webkit-scrollbar {
+  width: 6px;
+}
+.add-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* ---------- Плитка ---------- */
+.grid-container {
+  padding: 15px 10px 10px;
+  background: #1d1d1d;
+  overflow: hidden;
+}
+
+.grid-container h1 {
+  font-size: 18px;
+  margin: 0 0 10px 0;
+  text-align: center;
+  color: #fff;
+}
+
+.filter-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  background: #fff;
+  padding: 8px 10px;
+  border-radius: 12px;
+  flex-wrap: wrap; /* если не влезут на узком экране, перенесутся */
+}
+
+.filter-form label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+}
+
+.filter-form input {
+  width: 70px; /* компактные поля */
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.filter-form button {
+  padding: 6px 14px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  grid-auto-rows: min-content;   /* ряды подстраиваются под контент */
+  overflow-y: auto;              /* прокрутка только внутри сетки */
+  padding-right: 4px;            /* чтобы скроллбар не наезжал на карточки */
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;    /* картинка сверху, инфо снизу */
+}
+
+.card a {
+  text-decoration: none;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  height: 100%;              /* ссылка занимает всю карточку */
+}
+
+.card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;       /* пропорции картинки — 4:3, можно 1:1 или 16:9 */
+  object-fit: cover;         /* заполняет область без искажений */
+  display: block;
+  flex-shrink: 0;            /* не сжимается */
+}
+
+.card-info {
+  padding: 10px;
+  flex-grow: 1;              /* инфо растягивается на оставшееся место */
+}
+
+.card-info h3 {
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.card-info p {
+  font-size: 12px;
+  color: #555;
+  margin: 2px 0;
+}
+
+.card-info .cost {
+  font-weight: bold;
+  color: #000;
+}
+
+/* Красивая полоса прокрутки (опционально) */
+.grid-cards::-webkit-scrollbar {
+  width: 6px;
+}
+.grid-cards::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* ---------- Нижняя навигация ---------- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 480px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #000000;
+  display: flex;
+  justify-content: space-around;
+  padding: 0;
+  border-top: none;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  height: 60px;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 14px;
+  transition: color 0.3s ease, background 0.3s ease;
+  border-radius: 0;
+}
+
+.nav-item:hover {
+  color: #8b0000;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-item:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feed-container{
+  max-width: 480px;      /* ← ограничиваем ширину как у навбара */
+  margin: 0 auto;        /* ← центрируем по горизонтали */
+  height: calc(100vh - 60px);
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.grid-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 15px 10px 10px;
+  height: calc(100vh - 60px);       /* высота экрана минус навбар */
+  display: flex;
+  flex-direction: column;           /* заголовок, фильтр, сетка — вертикально */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.grid-container h1 {
+  font-size: 18px;
+  margin: 0 0 10px 0;
+  text-align: center;
+  color: #fff;
+  flex-shrink: 0;                   /* не сжимается */
+}
+
+.filter-form {
+  flex-shrink: 0;                   /* не сжимается */
+  /* остальные стили без изменений */
+}
