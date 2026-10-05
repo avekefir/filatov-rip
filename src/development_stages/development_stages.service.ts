@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-export interface DevStage {
+export interface DevelopmentStage {
   id: number;
   stageName: string;          // название этапа
   stageDescription: string;   // краткое описание
-  laborIntensity: number;     // трудоёмкость (часы)
-  hourlyRate: number;         // ставка разработчика (₽/час)
-  stageCost: number;          // стоимость этапа (₽)
-  teamSize: number;           // размер команды (чел)
-  durationDays: number;       // длительность (дни)
+  costPerHour: number;        // стоимость за час (₽/ч)
+  maxTeamSize: number;        // максимальный размер команды (чел)
   status: 'draft' | 'published' | 'deleted';
   image: string;              // имя файла в MinIO
   video: string;              // имя файла в MinIO
@@ -16,17 +13,14 @@ export interface DevStage {
 }
 
 @Injectable()
-export class DevStagesService {
-  private stages: DevStage[] = [
+export class DevelopmentStagesService {
+  private stages: DevelopmentStage[] = [
     {
       id: 1,
       stageName: 'Проектирование',
       stageDescription: 'Разработка архитектуры ПО и технического задания',
-      laborIntensity: 40,
-      hourlyRate: 1500,
-      stageCost: 60000,
-      teamSize: 2,
-      durationDays: 10,
+      costPerHour: 1500,
+      maxTeamSize: 3,
       status: 'published',
       image: 'design.jpg',
       video: 'design.mp4',
@@ -36,11 +30,8 @@ export class DevStagesService {
       id: 2,
       stageName: 'Кодирование',
       stageDescription: 'Написание исходного кода по спринтам',
-      laborIntensity: 120,
-      hourlyRate: 2000,
-      stageCost: 240000,
-      teamSize: 4,
-      durationDays: 30,
+      costPerHour: 2000,
+      maxTeamSize: 5,
       status: 'published',
       image: 'coding.jpg',
       video: 'coding.mp4',
@@ -50,11 +41,8 @@ export class DevStagesService {
       id: 3,
       stageName: 'Тестирование',
       stageDescription: 'Ручное и автоматизированное тестирование модулей',
-      laborIntensity: 60,
-      hourlyRate: 1200,
-      stageCost: 72000,
-      teamSize: 2,
-      durationDays: 15,
+      costPerHour: 1200,
+      maxTeamSize: 3,
       status: 'published',
       image: 'testing.jpg',
       video: 'testing.mp4',
@@ -64,11 +52,8 @@ export class DevStagesService {
       id: 4,
       stageName: 'Внедрение',
       stageDescription: 'Развертывание и сопровождение',
-      laborIntensity: 30,
-      hourlyRate: 1800,
-      stageCost: 54000,
-      teamSize: 1,
-      durationDays: 7,
+      costPerHour: 1800,
+      maxTeamSize: 2,
       status: 'deleted',        // не отображается
       image: 'deploy.jpg',
       video: 'deploy.mp4',
@@ -78,11 +63,8 @@ export class DevStagesService {
       id: 5,
       stageName: 'Черновик этапа',
       stageDescription: 'Заполните описание нового этапа',
-      laborIntensity: 0,
-      hourlyRate: 1000,
-      stageCost: 0,
-      teamSize: 1,
-      durationDays: 0,
+      costPerHour: 1000,
+      maxTeamSize: 2,
       status: 'draft',          // единственный черновик
       image: 'draft.jpg',
       video: 'draft.mp4',
@@ -90,34 +72,31 @@ export class DevStagesService {
     },
   ];
 
-  getPublished(): DevStage[] {
-    return this.stages.filter(s => s.status === 'published');
+  getPublished(): DevelopmentStage[] {
+    return this.stages.filter((s) => s.status === 'published');
   }
 
-  getDraft(): DevStage | undefined {
-    return this.stages.find(s => s.status === 'draft');
+  getDraft(): DevelopmentStage | undefined {
+    return this.stages.find((s) => s.status === 'draft');
   }
 
-  getById(id: number): DevStage | undefined {
-    return this.stages.find(s => s.id === id);
+  getById(id: number): DevelopmentStage | undefined {
+    return this.stages.find((s) => s.id === id);
   }
 
-  getNextAfter(id: number): DevStage | undefined {
+  getNextAfter(id: number): DevelopmentStage | undefined {
     const published = this.getPublished();
     if (published.length === 0) return undefined;
-    const index = published.findIndex(s => s.id === id);
+    const index = published.findIndex((s) => s.id === id);
     if (index === -1) return undefined;
     if (index === published.length - 1) return published[0]; // цикл
     return published[index + 1];
   }
 
-  filterByCostRange(minCost: number, maxCost: number): DevStage[] {
+  // Фильтрация по максимальной стоимости за час (один слайдер)
+  filterByMaxCostPerHour(maxCostPerHour: number): DevelopmentStage[] {
     const published = this.getPublished();
-    if (isNaN(minCost) && isNaN(maxCost)) return published;
-    return published.filter(s => {
-      if (!isNaN(minCost) && s.stageCost < minCost) return false;
-      if (!isNaN(maxCost) && s.stageCost > maxCost) return false;
-      return true;
-    });
+    if (isNaN(maxCostPerHour)) return published;
+    return published.filter((s) => s.costPerHour <= maxCostPerHour);
   }
 }

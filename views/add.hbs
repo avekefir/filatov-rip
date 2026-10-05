@@ -12,12 +12,18 @@
       <h1>Черновик этапа</h1>
       <form>
         <div class="form-group">
-          <label>Изображение</label>
-          <div class="media-preview"><img src="{{imageUrl}}" alt="изображение" /></div>
+          <label>Фото</label>
+          <input type="file" accept="image/*" class="file-input" />
+          <div class="media-preview">
+            <img src="{{imageUrl}}" alt="изображение" />
+          </div>
         </div>
         <div class="form-group">
           <label>Видео</label>
-          <div class="media-preview"><video src="{{videoUrl}}" controls></video></div>
+          <input type="file" accept="video/*" class="file-input" />
+          <div class="media-preview">
+            <video src="{{videoUrl}}" controls></video>
+          </div>
         </div>
         <div class="form-group">
           <label>Название этапа</label>
@@ -28,26 +34,13 @@
           <textarea placeholder="Введите описание этапа"></textarea>
         </div>
         <div class="form-group">
-          <label>Трудоёмкость (часы)</label>
-          <input type="number" placeholder="Например, 40" />
-        </div>
-        <div class="form-group">
-          <label>Ставка (₽/час)</label>
+          <label>Стоимость за час (₽/час)</label>
           <input type="number" placeholder="Например, 1500" />
         </div>
         <div class="form-group">
-          <label>Стоимость этапа (₽)</label>
-          <input type="number" placeholder="Например, 60000" />
+          <label>Максимальный размер команды (чел)</label>
+          <input type="number" placeholder="Например, 5" />
         </div>
-        <div class="form-group">
-          <label>Размер команды (чел)</label>
-          <input type="number" placeholder="Например, 2" />
-        </div>
-        <div class="form-group">
-          <label>Длительность (дни)</label>
-          <input type="number" placeholder="Например, 10" />
-        </div>
-        <button type="button" disabled>Опубликовать</button>
       </form>
     {{else}}
       <p>Черновик не найден</p>

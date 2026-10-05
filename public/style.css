@@ -3,7 +3,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden; /* отключаем прокрутку */
+  overflow: hidden;
   background: #1d1d1d;
   font-family: Roboto, Arial, sans-serif;
   color: #fff;
@@ -13,13 +13,18 @@ html, body {
 .feed-container,
 .add-container,
 .grid-container {
-  height: calc(100vh - 60px); /* минус высота навбара */
-  overflow: hidden;
-  position: relative;
+  max-width: 480px;
+  margin: 0 auto;
+  height: calc(100vh - 60px);
   box-sizing: border-box;
 }
 
-/* ---------- Лента (feed) ---------- */
+/* ---------- ЛЕНТА ---------- */
+.feed-container {
+  overflow: hidden;
+  position: relative;
+}
+
 .video-wrapper {
   height: 100%;
   width: 100%;
@@ -37,10 +42,10 @@ html, body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px 20px 15px;
+  padding: 20px;
   color: #fff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, transparent 100%);
   display: flex;
   flex-direction: row;
   align-items: flex-end;
@@ -61,74 +66,32 @@ html, body {
 
 .info .description {
   font-size: 14px;
-  margin: 0 0 8px 0;
+  margin: 0;
   line-height: 1.3;
 }
 
-/* ---------- Скрытый чекбокс (переключатель) ---------- */
-.toggle-checkbox {
-  display: none;
-}
-
-/* ---------- Поля по теме (по умолчанию скрыты) ---------- */
-.info .fields {
-  display: none;
-  flex-wrap: wrap;
-  gap: 6px;
-  font-size: 13px;
-  margin-top: 8px;
-}
-
-.info .fields span {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 2px 10px;
-  border-radius: 12px;
-}
-
-/* Когда чекбокс отмечен — показываем поля */
-.toggle-checkbox:checked ~ .fields {
-  display: flex;
-}
-
-/* ---------- Кнопка «Больше/Меньше» ---------- */
-.toggle-btn {
-  display: inline-block;
-  margin-top: 8px;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 4px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s;
-  user-select: none;
-}
-
-.toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-/* По умолчанию показываем «Больше», скрываем «Меньше» */
-.toggle-btn .show-less {
-  display: none;
-}
-
-/* Когда чекбокс отмечен — наоборот */
-.toggle-checkbox:checked ~ .toggle-btn .show-more {
-  display: none;
-}
-.toggle-checkbox:checked ~ .toggle-btn .show-less {
-  display: inline;
-}
-
-/* ---------- Правый блок: лайки и кнопка ---------- */
+/* Правая колонка — параметры + лайк + кнопка */
 .actions {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 10px;
   flex-shrink: 0;
-  margin-top: 0;
+}
+
+.actions .fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  align-items: flex-end;
+}
+
+.actions .fields span {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
 }
 
 .likes-circle {
@@ -145,7 +108,6 @@ html, body {
   color: #fff;
   font-size: 13px;
   line-height: 1.2;
-  margin-bottom: 12px;      /* отступ только снизу, чтобы лайк был над кнопкой */
 }
 
 .likes-circle .heart {
@@ -167,39 +129,41 @@ html, body {
   font-weight: bold;
   font-size: 14px;
   transition: background 0.3s;
+  white-space: nowrap;
 }
 
 .next-btn:hover {
   background: #bb0d0d;
 }
-/* ---------- Добавление ---------- */
+
+/* ---------- ДОБАВЛЕНИЕ ---------- */
 .add-container {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 20px 20px 80px;       /* снизу отступ 80px — чтобы последнее поле не залезало под навбар */
-  height: calc(100vh - 60px);    /* высота экрана минус навбар */
-  overflow-y: auto;              /* ← включает прокрутку только внутри контейнера */
-  box-sizing: border-box;
+  padding: 20px 20px 80px;
+  overflow-y: auto;
+  background: #fff;
 }
 
 .add-container h1 {
   text-align: center;
   margin-bottom: 16px;
   font-size: 20px;
+  color: #222;
 }
 
 .form-group {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .form-group label {
   display: block;
   font-weight: bold;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   font-size: 14px;
+  color: #333;
 }
 
-.form-group input,
+.form-group input[type="text"],
+.form-group input[type="number"],
 .form-group textarea {
   width: 100%;
   padding: 8px 12px;
@@ -209,12 +173,13 @@ html, body {
   font-size: 14px;
   font-family: inherit;
   box-sizing: border-box;
+  color: #222;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #CD1D1D;         /* подсветка при фокусе — в вашем красном */
+  border-color: #CD1D1D;
   background: #fff;
 }
 
@@ -223,8 +188,22 @@ html, body {
   resize: vertical;
 }
 
+/* Кнопка выбора файла */
+.file-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px dashed #CD1D1D;
+  border-radius: 8px;
+  background: #fdf6f6;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
 .media-preview {
-  margin-bottom: 6px;
+  margin-top: 6px;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -238,20 +217,6 @@ html, body {
   display: block;
 }
 
-.add-container button {
-  width: 100%;
-  padding: 10px;
-  background: #bb0d0d;
-  color: #fff;
-  border: none;
-  border-radius: 30px;
-  font-size: 16px;
-  cursor: not-allowed;
-  opacity: 0.6;
-  margin-top: 10px;
-}
-
-/* Красивая полоса прокрутки (опционально) */
 .add-container::-webkit-scrollbar {
   width: 6px;
 }
@@ -260,10 +225,12 @@ html, body {
   border-radius: 3px;
 }
 
-/* ---------- Плитка ---------- */
+/* ---------- ПЛИТКА ---------- */
 .grid-container {
   padding: 15px 10px 10px;
   background: #1d1d1d;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -272,63 +239,75 @@ html, body {
   margin: 0 0 10px 0;
   text-align: center;
   color: #fff;
+  flex-shrink: 0;
 }
 
 .filter-form {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 12px;
   background: #fff;
-  padding: 8px 10px;
+  padding: 12px;
   border-radius: 12px;
-  flex-wrap: wrap; /* если не влезут на узком экране, перенесутся */
+  flex-shrink: 0;
 }
 
-.filter-form label {
+.range-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.range-group label {
   font-size: 13px;
   font-weight: bold;
   color: #333;
-  white-space: nowrap;
 }
 
-.filter-form input {
-  width: 70px; /* компактные поля */
-  padding: 6px 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 13px;
-  text-align: center;
+.range-group input[type="range"] {
+  width: 100%;
+  accent-color: #CD1D1D;
+}
+
+.range-value {
+  color: #CD1D1D;
+  font-weight: bold;
+  font-size: 15px;
+  margin-left: 4px;
 }
 
 .filter-form button {
-  padding: 6px 14px;
-  background: #007bff;
+  padding: 8px 16px;
+  background: #CD1D1D;
   color: #fff;
   border: none;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
-  white-space: nowrap;
+  align-self: flex-end;
+}
+
+.filter-form button:hover {
+  background: #bb0d0d;
 }
 
 .grid-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  grid-auto-rows: min-content;   /* ряды подстраиваются под контент */
-  overflow-y: auto;              /* прокрутка только внутри сетки */
-  padding-right: 4px;            /* чтобы скроллбар не наезжал на карточки */
+  grid-auto-rows: min-content;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .card {
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   display: flex;
-  flex-direction: column;    /* картинка сверху, инфо снизу */
+  flex-direction: column;
 }
 
 .card a {
@@ -336,20 +315,20 @@ html, body {
   color: #222;
   display: flex;
   flex-direction: column;
-  height: 100%;              /* ссылка занимает всю карточку */
+  height: 100%;
 }
 
 .card img {
   width: 100%;
-  aspect-ratio: 4 / 3;       /* пропорции картинки — 4:3, можно 1:1 или 16:9 */
-  object-fit: cover;         /* заполняет область без искажений */
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
   display: block;
-  flex-shrink: 0;            /* не сжимается */
+  flex-shrink: 0;
 }
 
 .card-info {
   padding: 10px;
-  flex-grow: 1;              /* инфо растягивается на оставшееся место */
+  flex-grow: 1;
 }
 
 .card-info h3 {
@@ -368,7 +347,6 @@ html, body {
   color: #000;
 }
 
-/* Красивая полоса прокрутки (опционально) */
 .grid-cards::-webkit-scrollbar {
   width: 6px;
 }
@@ -377,7 +355,7 @@ html, body {
   border-radius: 3px;
 }
 
-/* ---------- Нижняя навигация ---------- */
+/* ---------- НИЖНЯЯ НАВИГАЦИЯ ---------- */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -423,34 +401,52 @@ html, body {
   border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.feed-container{
-  max-width: 480px;      /* ← ограничиваем ширину как у навбара */
-  margin: 0 auto;        /* ← центрируем по горизонтали */
-  height: calc(100vh - 60px);
-  overflow: hidden;
+/* ---------- Слайдер с линейкой ---------- */
+.slider-wrapper {
   position: relative;
-  box-sizing: border-box;
+  padding-bottom: 22px;      /* место под подписи */
 }
 
-.grid-container {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 15px 10px 10px;
-  height: calc(100vh - 60px);       /* высота экрана минус навбар */
+.slider-wrapper input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: #CD1D1D;
+  display: block;
+}
+
+.slider-ticks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
-  flex-direction: column;           /* заголовок, фильтр, сетка — вертикально */
-  overflow: hidden;
-  box-sizing: border-box;
-}
-.grid-container h1 {
-  font-size: 18px;
-  margin: 0 0 10px 0;
-  text-align: center;
-  color: #fff;
-  flex-shrink: 0;                   /* не сжимается */
+  justify-content: space-between;
+  font-size: 11px;
+  color: #555;
+  pointer-events: none;      /* не мешает кликам */
+  padding: 0 2px;
 }
 
-.filter-form {
-  flex-shrink: 0;                   /* не сжимается */
-  /* остальные стили без изменений */
+.slider-ticks span {
+  position: relative;
+  text-align: center;
+  min-width: 30px;
+}
+
+/* Маленькие риски над цифрами */
+.slider-ticks span::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 5px;
+  background: #999;
+}
+
+/* Убираем риску у крайних значений, чтобы было аккуратнее */
+.slider-ticks span:first-child::before,
+.slider-ticks span:last-child::before {
+  display: none;
 }
