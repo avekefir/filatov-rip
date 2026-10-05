@@ -1,6 +1,6 @@
 import { Entity, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
-import { DevStage } from './dev-stage.entity';
+import { DevelopmentStage } from './development_stages.entity';
 
 @Entity('stage_likes')
 export class StageLike {
@@ -14,7 +14,9 @@ export class StageLike {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => DevStage, (stage) => stage.likes, { onDelete: 'NO ACTION' })
+  @ManyToOne(() => DevelopmentStage, (stage) => stage.likes, {
+    onDelete: 'NO ACTION',
+  })
   @JoinColumn({ name: 'stageId' })
-  stage: DevStage;
+  stage: DevelopmentStage;
 }

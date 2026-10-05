@@ -7,10 +7,10 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { StageLike } from './stage-like.entity';
+import { StageLike } from './stage_like.entity';
 
-@Entity('dev_stages')
-export class DevStage {
+@Entity('development_stages')
+export class DevelopmentStage {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -29,21 +29,14 @@ export class DevStage {
   @Column({ type: 'varchar', length: 200, nullable: true })
   video: string;
 
+  // Поля по теме
   @Column({ type: 'int', default: 0 })
-  laborIntensity: number;
-
-  @Column({ type: 'int', default: 0 })
-  hourlyRate: number;
-
-  @Column({ type: 'int', default: 0 })
-  stageCost: number;
+  costPerHour: number;         // стоимость за час (₽/ч)
 
   @Column({ type: 'int', default: 1 })
-  teamSize: number;
+  maxTeamSize: number;         // максимальный размер команды (чел)
 
-  @Column({ type: 'int', default: 0 })
-  durationDays: number;
-
+  // Системные поля
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

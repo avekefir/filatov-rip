@@ -3,10 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DevStagesModule } from './dev-stages/dev-stages.module';
-import { User } from './dev-stages/entities/user.entity';
-import { DevStage } from './dev-stages/entities/dev-stage.entity';
-import { StageLike } from './dev-stages/entities/stage-like.entity';
+import { DevelopmentStagesModule } from './development_stages/development_stages.module';
+import { User } from './development_stages/entities/user.entity';
+import { DevelopmentStage } from './development_stages/entities/development_stages.entity';
+import { StageLike } from './development_stages/entities/stage_like.entity';
 
 @Module({
   imports: [
@@ -21,11 +21,11 @@ import { StageLike } from './dev-stages/entities/stage-like.entity';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_DATABASE'),
-        entities: [User, DevStage, StageLike],
+        entities: [User, DevelopmentStage, StageLike],
         synchronize: false,
       }),
     }),
-    DevStagesModule,
+    DevelopmentStagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

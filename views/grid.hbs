@@ -9,16 +9,32 @@
 <body>
   <div class="grid-container">
     <h1>Этапы разработки ПО</h1>
-    <form action="/dev-stages/grid" method="GET" class="filter-form">
+    <form action="/development_stages/grid" method="GET" class="filter-form">
       <div class="range-group">
-        <label>Стоимость от (₽):</label>
-        <input type="range" name="minCost" min="0" max="300000" step="1000" value="{{minCost}}" />
-        <span class="range-value">{{minCost}}</span>
-      </div>
-      <div class="range-group">
-        <label>Стоимость до (₽):</label>
-        <input type="range" name="maxCost" min="0" max="300000" step="1000" value="{{maxCost}}" />
-        <span class="range-value">{{maxCost}}</span>
+        <label>
+          Стоимость за час до:
+          <span class="range-value">{{#if maxCostPerHour}}{{maxCostPerHour}}{{else}}3000{{/if}} ₽/ч</span>
+        </label>
+
+        <div class="slider-wrapper">
+          <input
+            type="range"
+            name="maxCostPerHour"
+            min="0"
+            max="3000"
+            step="100"
+            value="{{#if maxCostPerHour}}{{maxCostPerHour}}{{else}}3000{{/if}}"
+          />
+          <div class="slider-ticks">
+            <span>0</span>
+            <span>500</span>
+            <span>1000</span>
+            <span>1500</span>
+            <span>2000</span>
+            <span>2500</span>
+            <span>3000</span>
+          </div>
+        </div>
       </div>
       <button type="submit">Применить</button>
     </form>
@@ -26,15 +42,16 @@
     <div class="grid-cards">
       {{#each stages}}
         <div class="card">
-          <a href="/dev-stages/feed/{{this.id}}">
+          <a href="/development_stages/feed/{{this.id}}">
             <img src="{{this.imageUrl}}" alt="{{this.stageName}}" />
             <div class="card-info">
               <h3>{{this.stageName}}</h3>
               <p>❤️ {{this.likesCount}}</p>
-              <p class="cost">Стоимость: {{this.stageCost}} ₽</p>
+              <p class="cost">Стоимость за час: {{this.costPerHour}} ₽/ч</p>
+              <p class="cost">Макс. команда: {{this.maxTeamSize}} чел</p>
             </div>
           </a>
-          <form action="/dev-stages/delete" method="POST" class="delete-form">
+          <form action="/development_stages/delete" method="POST" class="delete-form">
             <input type="hidden" name="id" value="{{this.id}}" />
             <button type="submit" class="delete-btn">🗑 Удалить</button>
           </form>

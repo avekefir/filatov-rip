@@ -1,6 +1,6 @@
 import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
-import { DevStage } from './dev-stage.entity';
-import { StageLike } from './stage-like.entity';
+import { DevelopmentStage } from './development_stages.entity';
+import { StageLike } from './stage_like.entity';
 
 @Entity('users')
 export class User {
@@ -16,8 +16,8 @@ export class User {
   @Column({ type: 'varchar', length: 50, default: 'creator' })
   role: string;
 
-  @OneToMany(() => DevStage, (stage) => stage.creator)
-  createdStages: DevStage[];
+  @OneToMany(() => DevelopmentStage, (stage) => stage.creator)
+  createdStages: DevelopmentStage[];
 
   @OneToMany(() => StageLike, (like) => like.user)
   likes: StageLike[];

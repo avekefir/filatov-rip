@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import { User } from '../src/dev-stages/entities/user.entity';
-import { DevStage } from '../src/dev-stages/entities/dev-stage.entity';
-import { StageLike } from '../src/dev-stages/entities/stage-like.entity';
+import { User } from '../src/development_stages/entities/user.entity';
+import { DevStage } from '../src/development_stages/entities/development_stages.entity';
+import { StageLike } from '../src/development_stages/entities/stage_like.entity';
 
 const dataSource = new DataSource({
   type: 'postgres',

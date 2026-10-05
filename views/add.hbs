@@ -12,12 +12,18 @@
       <h1>Черновик этапа</h1>
       <form>
         <div class="form-group">
-          <label>Изображение</label>
-          <div class="media-preview"><img src="{{imageUrl}}" alt="изображение" /></div>
+          <label>Фото</label>
+          <input type="file" accept="image/*" class="file-input" />
+          <div class="media-preview">
+            <img src="{{imageUrl}}" alt="изображение" />
+          </div>
         </div>
         <div class="form-group">
           <label>Видео</label>
-          <div class="media-preview"><video src="{{videoUrl}}" controls></video></div>
+          <input type="file" accept="video/*" class="file-input" />
+          <div class="media-preview">
+            <video src="{{videoUrl}}" controls></video>
+          </div>
         </div>
         <div class="form-group">
           <label>Название этапа</label>
@@ -28,69 +34,53 @@
           <textarea>{{stage.stageDescription}}</textarea>
         </div>
         <div class="form-group">
-          <label>Трудоёмкость (часы)</label>
-          <input type="number" value="{{stage.laborIntensity}}" />
+          <label>Стоимость за час (₽/час)</label>
+          <input type="number" value="{{stage.costPerHour}}" />
         </div>
         <div class="form-group">
-          <label>Ставка (₽/час)</label>
-          <input type="number" value="{{stage.hourlyRate}}" />
-        </div>
-        <div class="form-group">
-          <label>Стоимость этапа (₽)</label>
-          <input type="number" value="{{stage.stageCost}}" />
-        </div>
-        <div class="form-group">
-          <label>Размер команды (чел)</label>
-          <input type="number" value="{{stage.teamSize}}" />
-        </div>
-        <div class="form-group">
-          <label>Длительность (дни)</label>
-          <input type="number" value="{{stage.durationDays}}" />
+          <label>Максимальный размер команды (чел)</label>
+          <input type="number" value="{{stage.maxTeamSize}}" />
         </div>
       </form>
-      <form action="/dev-stages/publish" method="POST">
+
+      <!-- Кнопка публикации (требуется для Lab 2 — смена статуса через ORM) -->
+      <form action="/development_stages/publish" method="POST">
         <input type="hidden" name="id" value="{{stage.id}}" />
         <button type="submit" class="publish-btn">Опубликовать</button>
       </form>
     {{else}}
       <h1>Создание черновика</h1>
       <p>У вас пока нет черновика. Нажмите «Далее», чтобы создать новый этап.</p>
-      <form action="/dev-stages/add" method="POST">
+      <form action="/development_stages/add" method="POST">
         <div class="form-group">
-          <label>Изображение</label>
-          <div class="media-preview"><img src="/default/image.jpg" alt="изображение" /></div>
+          <label>Фото</label>
+          <input type="file" accept="image/*" class="file-input" />
+          <div class="media-preview">
+            <img src="/default/image.jpg" alt="изображение" />
+          </div>
         </div>
         <div class="form-group">
           <label>Видео</label>
-          <div class="media-preview"><video src="/default/video.mp4" controls></video></div>
+          <input type="file" accept="video/*" class="file-input" />
+          <div class="media-preview">
+            <video src="/default/video.mp4" controls></video>
+          </div>
         </div>
         <div class="form-group">
           <label>Название этапа</label>
-          <input type="text" name="stageName" placeholder="Введите название" />
+          <input type="text" name="stageName" placeholder="Введите название этапа" />
         </div>
         <div class="form-group">
           <label>Описание</label>
-          <textarea name="stageDescription" placeholder="Введите описание"></textarea>
+          <textarea name="stageDescription" placeholder="Введите описание этапа"></textarea>
         </div>
         <div class="form-group">
-          <label>Трудоёмкость (часы)</label>
-          <input type="number" name="laborIntensity" placeholder="40" />
+          <label>Стоимость за час (₽/час)</label>
+          <input type="number" name="costPerHour" placeholder="Например, 1500" />
         </div>
         <div class="form-group">
-          <label>Ставка (₽/час)</label>
-          <input type="number" name="hourlyRate" placeholder="1500" />
-        </div>
-        <div class="form-group">
-          <label>Стоимость этапа (₽)</label>
-          <input type="number" name="stageCost" placeholder="60000" />
-        </div>
-        <div class="form-group">
-          <label>Размер команды (чел)</label>
-          <input type="number" name="teamSize" placeholder="2" />
-        </div>
-        <div class="form-group">
-          <label>Длительность (дни)</label>
-          <input type="number" name="durationDays" placeholder="10" />
+          <label>Максимальный размер команды (чел)</label>
+          <input type="number" name="maxTeamSize" placeholder="Например, 5" />
         </div>
         <button type="submit" class="next-step-btn">Далее</button>
       </form>
