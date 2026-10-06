@@ -3,7 +3,7 @@ let currentUserId: number | null = null;
 
 export function getCurrentUserId(): number {
   if (currentUserId === null) {
-    currentUserId = 1; // Иванов Иван — фиксированный создатель
+    currentUserId = 1; 
   }
   return currentUserId;
 }

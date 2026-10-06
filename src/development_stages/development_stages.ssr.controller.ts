@@ -75,7 +75,14 @@ export class DevelopmentStagesController {
   @Render('add')
   async getAdd() {
     const userId = getCurrentUserId();
-    const draft = await this.developmentStagesService.getDraft(userId);
+
+    // Ловим 404, если черновика нет — вместо этого показываем форму создания
+    let draft = null;
+    try {
+      draft = await this.developmentStagesService.getDraft(userId);
+    } catch {
+      draft = null;
+    }
 
     if (!draft) {
       return { stage: null, draftExists: false };
@@ -98,7 +105,14 @@ export class DevelopmentStagesController {
   @Redirect('/development_stages/add', 302)
   async createDraft(@Body() body: any) {
     const userId = getCurrentUserId();
-    const existing = await this.developmentStagesService.getDraft(userId);
+
+    // Проверяем, есть ли уже черновик (без выброса исключения)
+    let existing = null;
+    try {
+      existing = await this.developmentStagesService.getDraft(userId);
+    } catch {
+      existing = null;
+    }
     if (existing) return;
 
     await this.developmentStagesService.createDraft(
