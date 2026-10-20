@@ -120,20 +120,22 @@ html, body {
 }
 
 .next-btn {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;              
+  height: 48px;             
   background: #CD1D1D;
   color: #fff;
-  padding: 8px 20px;
-  border-radius: 30px;
+  border-radius: 50%;       
   text-decoration: none;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 20px;          
   transition: background 0.3s;
-  white-space: nowrap;
 }
 
 .next-btn:hover {
-  background: #bb0d0d;
+  background: #8b0000;
 }
 
 /* ---------- ДОБАВЛЕНИЕ ---------- */
@@ -246,7 +248,7 @@ html, body {
 .publish-btn {
   width: 100%;
   padding: 10px;
-  background: #28a745;
+  background: #CD1D1D;
   color: #fff;
   border: none;
   border-radius: 30px;
@@ -256,7 +258,7 @@ html, body {
   transition: background 0.3s;
 }
 .publish-btn:hover {
-  background: #1e7e34;
+  background: #8b0000;
 }
 
 /* ---------- ПЛИТКА ---------- */

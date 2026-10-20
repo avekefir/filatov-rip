@@ -9,48 +9,36 @@
 <body>
   <div class="add-container">
     {{#if stage}}
-      <h1>Черновик этапа</h1>
+      <!-- ЭТАП 2: Черновик создан (публикация) -->
+      <h1>Публикация этапа</h1>
       <form>
         <div class="form-group">
-          <label>Фото</label>
-          <input type="file" accept="image/*" class="file-input" />
-          <div class="media-preview">
-            <img src="{{imageUrl}}" alt="изображение" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Видео</label>
-          <input type="file" accept="video/*" class="file-input" />
-          <div class="media-preview">
-            <video src="{{videoUrl}}" controls></video>
-          </div>
-        </div>
-        <div class="form-group">
           <label>Название этапа</label>
-          <input type="text" value="{{stage.stageName}}" />
+          <input type="text" value="{{stage.stageName}}" disabled />
         </div>
         <div class="form-group">
           <label>Описание</label>
-          <textarea>{{stage.stageDescription}}</textarea>
+          <textarea placeholder="Введите описание этапа"></textarea>
         </div>
         <div class="form-group">
           <label>Стоимость за час (₽/час)</label>
-          <input type="number" value="{{stage.costPerHour}}" />
+          <input type="number" placeholder="Например, 1500" />
         </div>
         <div class="form-group">
           <label>Максимальный размер команды (чел)</label>
-          <input type="number" value="{{stage.maxTeamSize}}" />
+          <input type="number" placeholder="Например, 5" />
         </div>
       </form>
-
-      <!-- Кнопка публикации (требуется для Lab 2 — смена статуса через ORM) -->
+      
+      <!-- Кнопка публикации (красная) -->
       <form action="/development_stages/publish" method="POST">
         <input type="hidden" name="id" value="{{stage.id}}" />
         <button type="submit" class="publish-btn">Опубликовать</button>
       </form>
+
     {{else}}
+      <!-- ЭТАП 1: Черновика нет (создание) -->
       <h1>Создание черновика</h1>
-      <p>У вас пока нет черновика. Нажмите «Далее», чтобы создать новый этап.</p>
       <form action="/development_stages/add" method="POST">
         <div class="form-group">
           <label>Фото</label>
@@ -68,20 +56,9 @@
         </div>
         <div class="form-group">
           <label>Название этапа</label>
-          <input type="text" name="stageName" placeholder="Введите название этапа" />
+          <input type="text" name="stageName" placeholder="Введите название этапа" required />
         </div>
-        <div class="form-group">
-          <label>Описание</label>
-          <textarea name="stageDescription" placeholder="Введите описание этапа"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Стоимость за час (₽/час)</label>
-          <input type="number" name="costPerHour" placeholder="Например, 1500" />
-        </div>
-        <div class="form-group">
-          <label>Максимальный размер команды (чел)</label>
-          <input type="number" name="maxTeamSize" placeholder="Например, 5" />
-        </div>
+        
         <button type="submit" class="next-step-btn">Далее</button>
       </form>
     {{/if}}
