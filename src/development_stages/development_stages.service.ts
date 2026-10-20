@@ -42,6 +42,7 @@ export class DevelopmentStagesService {
     dto.isMyStage = stage.creatorId === currentUserId;
     dto.isLikedByMe = !!like;
     dto.createdAt = stage.createdAt;
+    dto.creatorId = stage.creatorId;
     dto.publishedAt = stage.publishedAt;
 
     return dto;

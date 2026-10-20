@@ -11,64 +11,90 @@ import {
   UseInterceptors,
   UploadedFiles,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { ApiTags, ApiOperation, ApiCookieAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { DevelopmentStagesService } from './development_stages.service';
 import { CreateDevelopmentStageDto } from './dto/create-development_stage.dto';
 import { FilterDevelopmentStageDto } from './dto/filter-development_stage.dto';
 import { LikeDto } from './dto/like.dto';
-import { getCurrentUserId } from './current-user';
+import { SessionGuard } from '../auth/guards/session.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { User } from './entities/user.entity';
 
+@ApiTags('Услуги (Development Stages)')
+@ApiCookieAuth('sessionId') // Указывает Swagger, что методы используют куку
 @Controller('api/development_stages')
 export class DevelopmentStagesApiController {
   constructor(
     private readonly developmentStagesService: DevelopmentStagesService,
   ) {}
 
-  // GET список опубликованных с фильтром
   @Get()
-  async getAll(@Query() filters: FilterDevelopmentStageDto) {
-    const userId = getCurrentUserId();
+  @ApiOperation({ summary: 'Список опубликованных услуг с фильтром (доступно всем)' })
+  async getAll(
+    @Query() filters: FilterDevelopmentStageDto,
+    @CurrentUser() user?: User, // Гость тоже может смотреть
+  ) {
+    // Если гость, передаем userId = 0
+    const userId = user ? user.id : 0;
     return this.developmentStagesService.findAll(filters, userId);
   }
 
-  // GET черновик текущего пользователя
-  // (важно: этот маршрут ВЫШЕ, чем '/:id')
   @Get('draft')
-  async getDraft() {
-    const userId = getCurrentUserId();
-    return this.developmentStagesService.getDraft(userId);
+  @UseGuards(SessionGuard)
+  @ApiOperation({ summary: 'Получить черновик текущего пользователя' })
+  async getDraft(@CurrentUser() user: User) {
+    return this.developmentStagesService.getDraft(user.id);
   }
 
-  // GET лента (без id или с ?next=true) — вообще-то нужен ид
-  // Сначала опишем /feed
   @Get('feed')
-  async getFeedFirst() {
-    // без id возвращаем первый опубликованный
-    const userId = getCurrentUserId();
+  @ApiOperation({ summary: 'Лента (первая карточка) — доступно всем' })
+  async getFeedFirst(@CurrentUser() user?: User) {
+    const userId = user ? user.id : 0;
     return this.developmentStagesService.getFeed(1, false, userId);
   }
 
-  // GET лента по id или следующий
   @Get('feed/:id')
+  @ApiOperation({ summary: 'Лента по ID или ?next=true' })
   async getFeed(
     @Param('id', ParseIntPipe) id: number,
     @Query('next') next: string,
+    @CurrentUser() user?: User,
   ) {
-    const userId = getCurrentUserId();
+    const userId = user ? user.id : 0;
     return this.developmentStagesService.getFeed(id, next === 'true', userId);
   }
 
-  // GET одна услуга по id
   @Get(':id')
-  async getOne(@Param('id', ParseIntPipe) id: number) {
-    const userId = getCurrentUserId();
+  @ApiOperation({ summary: 'Одна услуга по ID' })
+  async getOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user?: User,
+  ) {
+    const userId = user ? user.id : 0;
     return this.developmentStagesService.getFeed(id, false, userId);
   }
 
-  // POST создание с файлами (картинка + видео)
   @Post()
+  @UseGuards(SessionGuard)
+  @ApiOperation({ summary: 'Создание услуги (только авторизованные)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        stageName: { type: 'string' },
+        stageDescription: { type: 'string' },
+        costPerHour: { type: 'number' },
+        maxTeamSize: { type: 'number' },
+        image: { type: 'string', format: 'binary' },
+        video: { type: 'string', format: 'binary' },
+      },
+    },
+  })
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -77,25 +103,7 @@ export class DevelopmentStagesApiController {
       ],
       {
         storage: memoryStorage(),
-        limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
-        fileFilter: (req, file, callback) => {
-          if (file.fieldname === 'image') {
-            if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
-              return callback(
-                new BadRequestException('Только изображения (jpg, jpeg, png, gif, webp)'),
-                false,
-              );
-            }
-          } else if (file.fieldname === 'video') {
-            if (!file.mimetype.match(/\/(mp4|webm|mov)$/)) {
-              return callback(
-                new BadRequestException('Только видео (mp4, webm, mov)'),
-                false,
-              );
-            }
-          }
-          callback(null, true);
-        },
+        limits: { fileSize: 20 * 1024 * 1024 },
       },
     ),
   )
@@ -103,35 +111,42 @@ export class DevelopmentStagesApiController {
     @Body() dto: CreateDevelopmentStageDto,
     @UploadedFiles()
     files: { image?: Express.Multer.File[]; video?: Express.Multer.File[] },
+    @CurrentUser() user: User,
   ) {
-    const userId = getCurrentUserId();
     const image = files?.image?.[0];
     const video = files?.video?.[0];
-    return this.developmentStagesService.create(dto, image, video, userId);
+    return this.developmentStagesService.create(dto, image, video, user.id);
   }
 
-  // PUT публикация
   @Put(':id/publish')
-  async publish(@Param('id', ParseIntPipe) id: number) {
-    const userId = getCurrentUserId();
-    return this.developmentStagesService.publish(id, userId);
+  @UseGuards(SessionGuard)
+  @ApiOperation({ summary: 'Публикация услуги' })
+  async publish(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.developmentStagesService.publish(id, user.id);
   }
 
-  // DELETE (soft delete)
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    const userId = getCurrentUserId();
-    await this.developmentStagesService.remove(id, userId);
-    return { message: 'Услуга удалена', id };
+  @UseGuards(SessionGuard)
+  @ApiOperation({ summary: 'Удаление услуги (только свои)' })
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    await this.developmentStagesService.remove(id, user.id);
+    return {};
   }
 
-  // POST лайк
   @Post(':id/like')
+  @UseGuards(SessionGuard)
+  @ApiOperation({ summary: 'Поставить/убрать лайк (value: 0 или 1)' })
   async like(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: LikeDto,
+    @CurrentUser() user: User,
   ) {
-    const userId = getCurrentUserId();
-    return this.developmentStagesService.like(id, dto.value, userId);
+    return this.developmentStagesService.like(id, dto.value, user.id);
   }
 }

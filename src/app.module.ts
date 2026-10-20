@@ -7,6 +7,8 @@ import { DevelopmentStagesModule } from './development_stages/development_stages
 import { User } from './development_stages/entities/user.entity';
 import { DevelopmentStage } from './development_stages/entities/development_stages.entity';
 import { StageLike } from './development_stages/entities/stage_like.entity';
+import { SessionModule } from './auth/session.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { StageLike } from './development_stages/entities/stage_like.entity';
       }),
     }),
     DevelopmentStagesModule,
+    SessionModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

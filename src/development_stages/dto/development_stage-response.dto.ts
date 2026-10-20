@@ -37,6 +37,9 @@ export class DevelopmentStageResponseDto {
 
   @Expose()
   createdAt: Date;
+    
+  @Expose()
+  creatorId: number; 
 
   @Expose()
   publishedAt: Date | null;
